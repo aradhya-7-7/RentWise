@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom"
 import { useAuthStore } from "@/store/auth.store"
+import { useToast } from "@/hooks/useToast"
 
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -17,10 +18,17 @@ import { LogOut, User } from "lucide-react"
 export default function Topbar() {
   const navigate = useNavigate()
   const { user, logout } = useAuthStore()
+  const { showToast } = useToast()
 
   const handleLogout = () => {
     logout()
-    navigate("/login")
+   showToast({
+    title: "Logged out successfully ✅",
+    description: "See you again soon!",
+  })
+
+ window.location.href = "/"
+// ✅ Landing page
   }
 
   const initials =
