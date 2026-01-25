@@ -1,47 +1,46 @@
 import { Navigate, Route, Routes } from "react-router-dom"
 
-// Layouts
+import ProtectedRoute from "@/app/ProtectedRoute"
+
+// layouts
 import AdminLayout from "@/layouts/AdminLayout"
 import OwnerLayout from "@/layouts/OwnerLayout"
 import TenantLayout from "@/layouts/TenantLayout"
 
-// Auth pages                                                                   
-import Login from "@/pages/auth/Login"                                                      
+// auth pages
+import Login from "@/pages/auth/Login"
 import Register from "@/pages/auth/Register"
 
-// Admin pages
+// admin pages
 import AdminDashboard from "@/pages/admin/Dashboard"
 import AdminUsers from "@/pages/admin/Users"
 import AdminProperties from "@/pages/admin/Properties"
 
-// Owner pages
+// owner pages
 import OwnerDashboard from "@/pages/owner/Dashboard"
 import OwnerProperties from "@/pages/owner/Properties"
 import OwnerTenants from "@/pages/owner/Tenants"
 import OwnerRentLedger from "@/pages/owner/RentLedger"
 import OwnerMaintenance from "@/pages/owner/Maintenance"
 
-// Tenant pages
+// tenant pages
 import TenantDashboard from "@/pages/tenant/Dashboard"
 import TenantLease from "@/pages/tenant/Lease"
 import TenantPayments from "@/pages/tenant/Payments"
 import TenantMaintenance from "@/pages/tenant/Maintenance"
 
-// Components
-import ProtectedRoute from "@/app/ProtectedRoute"
+// misc
 import NotFound from "@/pages/NotFound"
 
 export default function AppRoutes() {
   return (
     <Routes>
-      {/* Default */}
+      {/* ---------- Public Routes ---------- */}
       <Route path="/" element={<Navigate to="/login" replace />} />
-
-      {/* Auth */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
 
-      {/* Admin Routes */}
+      {/* ---------- Admin Routes ---------- */}
       <Route
         path="/admin"
         element={
@@ -56,7 +55,7 @@ export default function AppRoutes() {
         <Route path="properties" element={<AdminProperties />} />
       </Route>
 
-      {/* Owner Routes */}
+      {/* ---------- Owner Routes ---------- */}
       <Route
         path="/owner"
         element={
@@ -73,7 +72,7 @@ export default function AppRoutes() {
         <Route path="maintenance" element={<OwnerMaintenance />} />
       </Route>
 
-      {/* Tenant Routes */}
+      {/* ---------- Tenant Routes ---------- */}
       <Route
         path="/tenant"
         element={
@@ -89,7 +88,7 @@ export default function AppRoutes() {
         <Route path="maintenance" element={<TenantMaintenance />} />
       </Route>
 
-      {/* Not Found */}
+      {/* ---------- Not Found ---------- */}
       <Route path="*" element={<NotFound />} />
     </Routes>
   )
