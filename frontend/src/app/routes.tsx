@@ -1,6 +1,10 @@
 import { Navigate, Route, Routes } from "react-router-dom"
 
 import ProtectedRoute from "@/app/ProtectedRoute"
+import Landing from "@/pages/Landing"
+import RedirectIfAuth from "@/app/RedirectIfAuth"
+
+
 
 // layouts
 import AdminLayout from "@/layouts/AdminLayout"
@@ -36,9 +40,33 @@ export default function AppRoutes() {
   return (
     <Routes>
       {/* ---------- Public Routes ---------- */}
-      <Route path="/" element={<Navigate to="/login" replace />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+     <Route
+  path="/"
+  element={
+    <RedirectIfAuth>
+      <Landing />
+    </RedirectIfAuth>
+  }
+/>
+
+<Route
+  path="/login"
+  element={
+    <RedirectIfAuth>
+      <Login />
+    </RedirectIfAuth>
+  }
+/>
+
+<Route
+  path="/register"
+  element={
+    <RedirectIfAuth>
+      <Register />
+    </RedirectIfAuth>
+  }
+/>
+
 
       {/* ---------- Admin Routes ---------- */}
       <Route
