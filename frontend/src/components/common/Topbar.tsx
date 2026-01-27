@@ -23,7 +23,7 @@ export default function Topbar() {
   const handleLogout = () => {
     logout()
    showToast({
-    title: "Logged out successfully ✅",
+    title: "Logged out successfully ",
     description: "See you again soon!",
   })
 

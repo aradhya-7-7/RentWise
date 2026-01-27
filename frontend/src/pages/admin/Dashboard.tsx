@@ -1,8 +1,17 @@
+import { useEffect, useState } from "react"
+
 import StatusBadge from "@/components/common/StatusBadge"
 import TableWrapper from "@/components/common/TableWrapper"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import PageSkeleton from "@/components/common/PageSkeleton"
 
-type ActivityStatus = "PAID" | "PENDING" | "OVERDUE" | "RESOLVED" | "IN_PROGRESS" | "URGENT"
+type ActivityStatus =
+  | "PAID"
+  | "PENDING"
+  | "OVERDUE"
+  | "RESOLVED"
+  | "IN_PROGRESS"
+  | "URGENT"
 
 type RecentActivity = {
   id: string
@@ -14,6 +23,16 @@ type RecentActivity = {
 }
 
 export default function Dashboard() {
+  const [loading, setLoading] = useState(true)
+
+  // ✅ Later: replace with real admin.service API call
+  useEffect(() => {
+    const t = setTimeout(() => setLoading(false), 2000)
+    return () => clearTimeout(t)
+  }, [])
+
+  if (loading) return <PageSkeleton />
+
   //  Later replace these with API calls (admin.service)
   const kpis = [
     { label: "Total Owners", value: 12, hint: "+2 this month" },
