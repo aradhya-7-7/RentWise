@@ -1,64 +1,61 @@
 import { NavLink } from "react-router-dom"
-import type { Role } from "@/types/user"
-
-type Props = {
-  role: Role
-}
+import type { LucideIcon } from "lucide-react"
 
 type NavItem = {
   label: string
-  to: string
+  href: string
+  icon?: LucideIcon
 }
 
-const nav: Record<Role, NavItem[]> = {
-  ADMIN: [
-    { label: "Dashboard", to: "/admin/dashboard" },
-    { label: "Users", to: "/admin/users" },
-    { label: "Properties", to: "/admin/properties" },
-  ],
-  OWNER: [
-    { label: "Dashboard", to: "/owner/dashboard" },
-    { label: "Properties", to: "/owner/properties" },
-    { label: "Tenants", to: "/owner/tenants" },
-    { label: "Rent Ledger", to: "/owner/rent-ledger" },
-    { label: "Maintenance", to: "/owner/maintenance" },
-  ],
-  TENANT: [
-    { label: "Dashboard", to: "/tenant/dashboard" },
-    { label: "Lease", to: "/tenant/lease" },
-    { label: "Payments", to: "/tenant/payments" },
-    { label: "Maintenance", to: "/tenant/maintenance" },
-  ],
-}
-
-export default function Sidebar({ role }: Props) {
+export default function Sidebar({
+  title = "RentWise",
+  subtitle = "Property Portal",
+  items,
+}: {
+  title?: string
+  subtitle?: string
+  items: NavItem[]
+}) {
   return (
-    <div className="h-full p-4">
-      <div className="mb-6">
-        <div className="text-lg font-bold tracking-tight">RentWise</div>
-        <div className="text-xs text-muted-foreground">
-          Role: <span className="font-medium">{role}</span>
+    <aside className="hidden md:flex md:w-64 lg:w-72 flex-col border-r border-white/10 bg-[#0F1622]">
+      {/* Brand */}
+      <div className="p-5 border-b border-white/10">
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#D4AF37] to-[#B8922F] shadow-[0_0_20px_rgba(212,175,55,0.25)]" />
+          <div className="leading-tight">
+            <div className="text-white font-bold tracking-tight">{title}</div>
+            <div className="text-xs text-white/60">{subtitle}</div>
+          </div>
         </div>
       </div>
 
-      <nav className="space-y-1">
-        {nav[role].map((item) => (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            className={({ isActive }) =>
-              [
-                "block rounded-md px-3 py-2 text-sm transition-colors",
-                isActive
-                  ? "bg-accent text-accent-foreground font-medium"
-                  : "hover:bg-accent hover:text-accent-foreground",
-              ].join(" ")
-            }
-          >
-            {item.label}
-          </NavLink>
-        ))}
+      {/* Links */}
+      <nav className="p-3 space-y-1">
+        {items.map((item) => {
+          const Icon = item.icon
+          return (
+            <NavLink
+              key={item.href}
+              to={item.href}
+              className={({ isActive }) =>
+                [
+                  "flex items-center gap-3 rounded-2xl px-4 py-3 text-sm transition",
+                  isActive
+                    ? "bg-[#D4AF37]/15 border border-[#D4AF37]/25 text-[#D4AF37] shadow-[0_0_18px_rgba(212,175,55,0.12)]"
+                    : "border border-transparent text-white/75 hover:bg-white/5 hover:text-white",
+                ].join(" ")
+              }
+            >
+              {Icon ? <Icon className="h-4 w-4" /> : null}
+              <span className="font-medium">{item.label}</span>
+            </NavLink>
+          )
+        })}
       </nav>
-    </div>
+
+      <div className="mt-auto p-4 text-xs text-white/40 border-t border-white/10">
+        © {new Date().getFullYear()} RentWise
+      </div>
+    </aside>
   )
 }

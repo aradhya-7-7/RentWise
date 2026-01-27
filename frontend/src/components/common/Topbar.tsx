@@ -40,19 +40,20 @@ export default function Topbar() {
       .toUpperCase() ?? "U"
 
   return (
-    <header className="sticky top-0 z-20 bg-background/80 backdrop-blur border-b">
+   <header className="sticky top-0 z-20 border-b border-white/10 bg-[#0B0F14]/80 backdrop-blur">
+
       <div className="h-14 px-4 md:px-6 flex items-center justify-between">
-        <div className="font-semibold tracking-tight">RentWise</div>
+        <div className="font-semibold tracking-tight text-white">RentWise</div>
 
         <div className="flex items-center gap-3">
           <div className="text-right leading-tight hidden sm:block">
-            <div className="text-sm font-medium">{user?.name ?? "User"}</div>
-            <div className="text-xs text-muted-foreground">{user?.role}</div>
+            <div className="text-sm font-medium text-white">{user?.name ?? "User"}</div>
+            <div className="text-xs text-muted-foreground text-white/60">{user?.role}</div>
           </div>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-10 w-10 rounded-full p-0">
+              <Button variant="ghost" className="h-10 w-10 rounded-full p-0 text-white/60">
                 <Avatar>
                   <AvatarFallback>{initials}</AvatarFallback>
                 </Avatar>
@@ -60,21 +61,21 @@ export default function Topbar() {
             </DropdownMenuTrigger>
 
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuLabel className="text-white/60">My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
 
               <DropdownMenuItem
                 onClick={() => navigate("/")}
-                className="gap-2"
+                className="gap-2 text-white/60"
               >
-                <User className="h-4 w-4" />
+                <User className="h-4 w-4 text-white/60" />
                 Profile
               </DropdownMenuItem>
 
               <DropdownMenuSeparator />
 
-              <DropdownMenuItem onClick={handleLogout} className="gap-2">
-                <LogOut className="h-4 w-4" />
+              <DropdownMenuItem onClick={handleLogout} className="gap-2 text-white/60">
+                <LogOut className="h-4 w-4 text-white/60" />
                 Logout
               </DropdownMenuItem>
             </DropdownMenuContent>

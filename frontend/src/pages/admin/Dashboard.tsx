@@ -5,6 +5,18 @@ import TableWrapper from "@/components/common/TableWrapper"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import PageSkeleton from "@/components/common/PageSkeleton"
 
+import ChartCard from "@/components/charts/ChartCard"
+import {
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  BarChart,
+  Bar,
+} from "recharts"
+
 type ActivityStatus =
   | "PAID"
   | "PENDING"
@@ -24,6 +36,25 @@ type RecentActivity = {
 
 export default function Dashboard() {
   const [loading, setLoading] = useState(true)
+
+  const rentData = [
+  { month: "Aug", collected: 82 },
+  { month: "Sep", collected: 88 },
+  { month: "Oct", collected: 90 },
+  { month: "Nov", collected: 92 },
+  { month: "Dec", collected: 89 },
+  { month: "Jan", collected: 94 },
+]
+
+const tenantGrowth = [
+  { month: "Aug", tenants: 60 },
+  { month: "Sep", tenants: 64 },
+  { month: "Oct", tenants: 70 },
+  { month: "Nov", tenants: 74 },
+  { month: "Dec", tenants: 80 },
+  { month: "Jan", tenants: 86 },
+]
+
 
   // ✅ Later: replace with real admin.service API call
   useEffect(() => {
@@ -87,6 +118,35 @@ export default function Dashboard() {
           </p>
         </div>
       </div>
+
+      <div className="grid gap-6 lg:grid-cols-2">
+  <ChartCard title="Tenant Growth" subtitle="Active tenants onboarded">
+    <div className="h-[260px]">
+      <ResponsiveContainer width="100%" height="100%">
+        <LineChart data={tenantGrowth}>
+          <XAxis dataKey="month" stroke="rgba(255,255,255,0.35)" />
+          <YAxis stroke="rgba(255,255,255,0.35)" />
+          <Tooltip />
+          <Line type="monotone" dataKey="tenants" stroke="#D4AF37" strokeWidth={3} dot={false} />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  </ChartCard>
+
+  <ChartCard title="Rent Collection %" subtitle="Monthly rent collection performance">
+    <div className="h-[260px]">
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={rentData}>
+          <XAxis dataKey="month" stroke="rgba(255,255,255,0.35)" />
+          <YAxis stroke="rgba(255,255,255,0.35)" />
+          <Tooltip />
+          <Bar dataKey="collected" fill="#D4AF37" radius={[10, 10, 0, 0]} />
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  </ChartCard>
+</div>
+
 
       {/* KPI Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
