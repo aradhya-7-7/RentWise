@@ -1,77 +1,44 @@
 import { useState } from "react"
-import { useNavigate, Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Toast, ToastDescription, ToastTitle } from "@/components/ui/toast"
 
+import { useAuthStore } from "@/store/auth.store"
 import { useToast } from "@/hooks/useToast"
-import { authService } from "@/services/auth.service"
-import type { Role } from "@/types/user"
+import { Toast, ToastTitle, ToastDescription } from "@/components/ui/toast"
+
+type SelectRole = "OWNER" | "TENANT"
 
 export default function Register() {
   const navigate = useNavigate()
+  const register = useAuthStore((s) => s.register)
   const { toast, showToast } = useToast()
 
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
-  const [role, setRole] = useState<Role>("TENANT")
   const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
+  const [role, setRole] = useState<SelectRole>("TENANT")
   const [loading, setLoading] = useState(false)
 
-  const validate = () => {
-    if (name.trim().length < 2) {
-      return "Name must be at least 2 characters"
-    }
-
-    if (!email.includes("@") || !email.includes(".")) {
-      return "Enter a valid email"
-    }
-
-    if (role === "ADMIN") {
-      return "You cannot register as Admin"
-    }
-
-    if (password.length < 6) {
-      return "Password must be at least 6 characters"
-    }
-
-    if (password !== confirmPassword) {
-      return "Passwords do not match"
-    }
-
-    return null
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    const error = validate()
-    if (error) {
-      showToast({ title: "Invalid form ", description: error })
-      return
-    }
-
-    setLoading(true)
     try {
-      await authService.register({
-        name,
-        email,
-        password,
-        role,
-      })
+      setLoading(true)
+      await register({ name, email, password, role })
 
       showToast({
-        title: "Account created ",
-        description: `Registered as ${role}. Please login.`,
+        title: "Account created ✅",
+        description: `Registered as ${role}`,
       })
 
-      setTimeout(() => navigate("/login"), 800)
+      if (role === "OWNER") navigate("/owner/dashboard")
+      else navigate("/tenant/dashboard")
     } catch (err: any) {
       showToast({
-        title: "Registration failed ",
-        description: err?.message || "Something went wrong",
+        title: "Registration failed ❌",
+        description: err?.message || "Please check inputs",
       })
     } finally {
       setLoading(false)
@@ -79,99 +46,138 @@ export default function Register() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-6">
-      <div className="w-full max-w-md rounded-2xl border p-6 shadow-sm space-y-5">
-        <div>
-          <h1 className="text-2xl font-bold">Create account</h1>
-          <p className="text-sm text-muted-foreground">
-            Register as Owner or Tenant to access the platform.
-          </p>
-        </div>
+    <div className="min-h-screen bg-[#0B0F14] text-white relative overflow-hidden flex items-center justify-center p-4">
+      {/* Background Effects */}
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
+        <div className="absolute -top-20 -left-20 h-[420px] w-[420px] rounded-full bg-[#D4AF37]/20 blur-[120px]" />
+        <div className="absolute top-[20%] -right-24 h-[520px] w-[520px] rounded-full bg-blue-500/10 blur-[140px]" />
+        <div className="absolute bottom-[-140px] left-[25%] h-[520px] w-[520px] rounded-full bg-purple-500/10 blur-[150px]" />
+        <div className="absolute inset-0 opacity-[0.08] bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:56px_56px]" />
+      </div>
 
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          {/* Name */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Full Name</label>
-            <Input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Enter your name"
-              type="text"
-              required
-            />
+      {/* Card */}
+      <div className="relative w-full max-w-md">
+        <div className="absolute -inset-2 rounded-[32px] bg-gradient-to-br from-[#D4AF37]/25 to-transparent blur-2xl" />
+
+        <div className="relative rounded-[28px] border border-white/10 bg-gradient-to-b from-white/10 to-white/5 p-6 shadow-[0_0_40px_rgba(0,0,0,0.45)] backdrop-blur">
+          {/* Brand */}
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#D4AF37] to-[#B8922F] shadow-[0_0_20px_rgba(212,175,55,0.25)]" />
+            <div className="leading-tight">
+              <div className="text-lg font-bold tracking-tight">RentWise</div>
+              <div className="text-xs text-white/60">
+                Create your portal account
+              </div>
+            </div>
           </div>
 
-          {/* Email */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Email</label>
-            <Input
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="your@email.com"
-              type="email"
-              required
-            />
-          </div>
-
-          {/* Role */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Register As</label>
-
-            <select
-              value={role}
-              onChange={(e) => setRole(e.target.value as Role)}
-              className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              {/* Admin is intentionally not available */}
-              <option value="TENANT">Tenant</option>
-              <option value="OWNER">Owner</option>
-            </select>
-
-            <p className="text-xs text-muted-foreground">
-              Admin accounts are created only by the system.
+          <div className="mt-6">
+            <h1 className="text-2xl font-bold tracking-tight">Register</h1>
+            <p className="text-sm text-white/60 mt-1">
+              Create an Owner or Tenant account.
             </p>
           </div>
 
-          {/* Password */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Password</label>
-            <Input
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Minimum 6 characters"
-              type="password"
-              required
-            />
-          </div>
+          <form onSubmit={onSubmit} className="mt-6 space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm text-white/80">Full name</label>
+              <Input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Your name"
+                className="bg-black/20 border-white/10 text-white placeholder:text-white/40 focus-visible:ring-[#D4AF37]/40"
+              />
+            </div>
 
-          {/* Confirm Password */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Confirm Password</label>
-            <Input
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Re-enter password"
-              type="password"
-              required
-            />
-          </div>
+            <div className="space-y-2">
+              <label className="text-sm text-white/80">Email</label>
+              <Input
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                className="bg-black/20 border-white/10 text-white placeholder:text-white/40 focus-visible:ring-[#D4AF37]/40"
+              />
+            </div>
 
-          <Button className="w-full" type="submit" disabled={loading}>
-            {loading ? "Creating..." : "Create account"}
-          </Button>
+            <div className="space-y-2">
+              <label className="text-sm text-white/80">Password</label>
+              <Input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Minimum 6 characters"
+                className="bg-black/20 border-white/10 text-white placeholder:text-white/40 focus-visible:ring-[#D4AF37]/40"
+              />
+            </div>
 
-          <p className="text-sm text-muted-foreground text-center">
-            Already have an account?{" "}
-            <Link to="/login" className="text-blue-600 underline">
-              Login
-            </Link>
-          </p>
-        </form>
+            {/* Role Selection */}
+            <div className="space-y-2">
+              <label className="text-sm text-white/80">Role</label>
+
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setRole("OWNER")}
+                  className={`rounded-2xl border p-4 text-left transition ${
+                    role === "OWNER"
+                      ? "border-[#D4AF37]/50 bg-[#D4AF37]/10"
+                      : "border-white/10 bg-black/20 hover:bg-black/30"
+                  }`}
+                >
+                  <div className="font-semibold">Owner</div>
+                  <div className="text-xs text-white/60 mt-1">
+                    Manage properties, tenants & rent ledger
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setRole("TENANT")}
+                  className={`rounded-2xl border p-4 text-left transition ${
+                    role === "TENANT"
+                      ? "border-[#D4AF37]/50 bg-[#D4AF37]/10"
+                      : "border-white/10 bg-black/20 hover:bg-black/30"
+                  }`}
+                >
+                  <div className="font-semibold">Tenant</div>
+                  <div className="text-xs text-white/60 mt-1">
+                    Pay rent, view lease, raise tickets
+                  </div>
+                </button>
+              </div>
+
+              <div className="text-[11px] text-white/50">
+                Admin accounts are created internally for security reasons.
+              </div>
+            </div>
+
+            <Button
+              type="submit"
+              disabled={loading}
+              className="h-11 w-full bg-[#D4AF37] text-black hover:bg-[#caa434]"
+            >
+              {loading ? "Creating account..." : "Create Account"}
+            </Button>
+
+            <div className="text-center text-sm text-white/65">
+              Already have an account?{" "}
+              <Link to="/login" className="text-[#D4AF37] hover:underline">
+                Login
+              </Link>
+            </div>
+
+            <div className="text-center text-xs text-white/50">
+              <Link to="/" className="hover:text-white/70">
+                ← Back to Home
+              </Link>
+            </div>
+          </form>
+        </div>
       </div>
 
-      {/* Toast UI */}
+      {/* Toast */}
       {toast && (
-        <div className="fixed top-4 right-4 z-[200]">
+        <div className="fixed top-4 right-4 z-[300]">
           <Toast open>
             <div>
               <ToastTitle>{toast.title}</ToastTitle>
