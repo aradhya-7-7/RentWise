@@ -4,6 +4,14 @@ import TableWrapper from "@/components/common/TableWrapper"
 import StatusBadge from "@/components/common/StatusBadge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+
 
 type PropertyStatus = "OCCUPIED" | "VACANT" | "PARTIAL"
 
@@ -108,8 +116,9 @@ export default function Properties() {
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Properties Overview</h1>
-          <p className="text-sm text-muted-foreground">
+          <h1 className="text-2xl font-bold tracking-tight text-white">
+Properties Overview</h1>
+          <p className="text-sm text-white/60">
             Read-only property visibility for admin monitoring and occupancy insights.
           </p>
         </div>
@@ -175,36 +184,40 @@ export default function Properties() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
-        <div className="flex gap-3 items-center">
-          <Input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search by property, owner, city..."
-            className="w-full md:w-[320px]"
-          />
+     <div className="flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
+  <div className="flex flex-col md:flex-row gap-3 md:items-center">
+    <Input
+      value={query}
+      onChange={(e) => setQuery(e.target.value)}
+      placeholder="Search by property, owner, city..."
+      className="w-full md:w-[340px]"
+    />
 
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as any)}
-            className="h-10 rounded-md border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            <option value="ALL">All status</option>
-            <option value="OCCUPIED">Occupied</option>
-            <option value="PARTIAL">Partial</option>
-            <option value="VACANT">Vacant</option>
-          </select>
-        </div>
+    <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as any)}>
+  <SelectTrigger className="w-full md:w-[180px]">
+    <SelectValue placeholder="All status" />
+  </SelectTrigger>
+  <SelectContent>
+    <SelectItem value="ALL">All status</SelectItem>
+    <SelectItem value="OCCUPIED">Occupied</SelectItem>
+    <SelectItem value="PARTIAL">Partial</SelectItem>
+    <SelectItem value="VACANT">Vacant</SelectItem>
+  </SelectContent>
+</Select>
 
-        <div className="text-sm text-muted-foreground">
-          Showing <span className="font-medium">{filtered.length}</span> properties
-        </div>
-      </div>
+  </div>
+
+  <div className="text-sm text-white/60">
+    Showing <span className="font-medium text-white">{filtered.length}</span>{" "}
+    properties
+  </div>
+</div>
+
 
       {/* Table */}
       <TableWrapper title="Properties">
         <table className="w-full text-sm">
-          <thead className="bg-muted/50">
+          <thead className="bg-white/5">
             <tr className="text-left">
               <th className="px-4 py-3 font-medium">Property</th>
               <th className="px-4 py-3 font-medium">Owner</th>
@@ -221,7 +234,7 @@ export default function Properties() {
                 p.totalUnits === 0 ? 0 : Math.round((p.occupiedUnits / p.totalUnits) * 100)
 
               return (
-                <tr key={p.id} className="border-t">
+                <tr key={p.id} className="border-t border-white/10 hover:bg-white/5 transition">
                   {/* Property */}
                   <td className="px-4 py-3">
                     <div className="font-medium">{p.name}</div>
