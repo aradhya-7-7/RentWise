@@ -21,11 +21,13 @@ type LoginPayload = {
   password: string
 }
 
-type RegisterPayload = {
+export type RegisterPayload = {
   name: string
   email: string
   password: string
-  role: Exclude<Role, "ADMIN"> // ✅ Admin not selectable
+  role: "OWNER" | "TENANT"
+  gender: "MALE" | "FEMALE" | "OTHER"
+  aadharFile: File | null
 }
 
 type AuthActions = {
@@ -128,11 +130,20 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
   },
 
   // ✅ register (mock now)
-  register: async ({ name, email, password, role }) => {
+register: async ({ name, email, password, role, gender, aadharFile }) => {
     if (!name.trim()) throw new Error("Name is required")
-    if (!email.trim()) throw new Error("Email is required")
-    if (!password.trim() || password.length < 6)
-      throw new Error("Password must be at least 6 characters")
+
+  if (!email.trim()) throw new Error("Email is required")
+
+  if (!password.trim() || password.length < 6)
+    throw new Error("Password must be at least 6 characters")
+
+  if (!gender)
+    throw new Error("Please select gender")
+
+  if (!aadharFile)
+    throw new Error("Please upload Aadhaar document")
+
 
     // ------------------------------------------
     // ✅ MOCK REGISTER (replace later with backend)

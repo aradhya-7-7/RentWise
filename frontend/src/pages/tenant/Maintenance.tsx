@@ -377,11 +377,20 @@ export default function Maintenance() {
       {/* Toast */}
       {toast && (
         <div className="fixed top-4 right-4 z-[300]">
-          <Toast open>
+          <Toast open className="bg-[#0B0F14] border border-white/10 text-white">
+
             <div>
-              <ToastTitle>{toast.title}</ToastTitle>
-              {toast.description && <ToastDescription>{toast.description}</ToastDescription>}
+              <ToastTitle className="text-white font-semibold">
+                {toast.title}
+              </ToastTitle>
+
+              {toast.description && (
+                <ToastDescription className="text-white/70">
+                  {toast.description}
+                </ToastDescription>
+              )}
             </div>
+
           </Toast>
         </div>
       )}
