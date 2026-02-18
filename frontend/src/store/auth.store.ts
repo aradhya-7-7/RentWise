@@ -1,4 +1,6 @@
 import { create } from "zustand"
+import { authService } from "@/services/auth.service"
+
 
 export type Role = "ADMIN" | "OWNER" | "TENANT"
 
@@ -86,89 +88,44 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
     })
   },
 
-  // ✅ enterprise-ready login (mock now, API later)
+  // ✅ enterprise-ready login (API)
   login: async ({ email, password }) => {
-    if (!email || !password) {
-      throw new Error("Email and password are required")
-    }
 
-    // ------------------------------------------
-    // ✅ MOCK LOGIN (replace later with backend):
-    // const res = await authService.login(payload)
-    // set user+token using res.data
-    // ------------------------------------------
+  const res = await authService.login({
+    email,
+    password,
+  })
 
-    const normalized = email.trim().toLowerCase()
+  const user = res.user
+  const token = res.token
 
-    let role: Role = "TENANT"
-    let name = "Tenant User"
+  saveAuth({ user, token })
 
-    if (normalized === "admin@demo.com") {
-      role = "ADMIN"
-      name = "Admin User"
-    } else if (normalized === "owner@demo.com") {
-      role = "OWNER"
-      name = "Owner User"
-    }
-
-    const fakeUser: User = {
-      id: `user-${role.toLowerCase()}-1`,
-      name,
-      email: normalized,
-      role,
-    }
-
-    const fakeToken = `mock-token-${Date.now()}`
-
-    saveAuth({ user: fakeUser, token: fakeToken })
-
-    set({
-      user: fakeUser,
-      token: fakeToken,
-      isAuthenticated: true,
-    })
-  },
-
-  // ✅ register (mock now)
-register: async ({ name, email, password, role, gender, aadharFile }) => {
-    if (!name.trim()) throw new Error("Name is required")
-
-  if (!email.trim()) throw new Error("Email is required")
-
-  if (!password.trim() || password.length < 6)
-    throw new Error("Password must be at least 6 characters")
-
-  if (!gender)
-    throw new Error("Please select gender")
-
-  if (!aadharFile)
-    throw new Error("Please upload Aadhaar document")
+  set({
+    user,
+    token,
+    isAuthenticated: true,
+  })
+},
 
 
-    // ------------------------------------------
-    // ✅ MOCK REGISTER (replace later with backend)
-    // const res = await authService.register(payload)
-    // ------------------------------------------
+  // ✅ register
+register: async (payload) => {
 
-    const normalized = email.trim().toLowerCase()
+  const res = await authService.register(payload)
 
-    const fakeUser: User = {
-      id: `user-${Date.now()}`,
-      name: name.trim(),
-      email: normalized,
-      role,
-    }
+  const user = res.user
+  const token = res.token
 
-    const fakeToken = `mock-token-${Date.now()}`
+  saveAuth({ user, token })
 
-    saveAuth({ user: fakeUser, token: fakeToken })
+  set({
+    user,
+    token,
+    isAuthenticated: true,
+  })
+},
 
-    set({
-      user: fakeUser,
-      token: fakeToken,
-      isAuthenticated: true,
-    })
-  },
 
   logout: () => {
     clearAuth()
