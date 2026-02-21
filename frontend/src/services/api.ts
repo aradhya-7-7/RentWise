@@ -13,14 +13,11 @@ export type ApiError = {
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
-  withCredentials: true, // keep true if backend uses cookies. If not, still fine.
+  withCredentials: true,
   timeout: 15000,
-  headers: {
-    "Content-Type": "application/json",
-  },
 })
 
-//Attach token automatically
+// Attach token automatically
 api.interceptors.request.use((config) => {
   const token = useAuthStore.getState().token
 
@@ -50,11 +47,10 @@ api.interceptors.response.use(
       details: data,
     }
 
-    // Auto logout on unauthorized
     if (status === 401) {
-      // optional: prevent infinite loops on login endpoints
       const url = err.config?.url ?? ""
-      const isAuthEndpoint = url.includes("/auth/login") || url.includes("/auth/register")
+      const isAuthEndpoint =
+        url.includes("/auth/login") || url.includes("/auth/register")
 
       if (!isAuthEndpoint) {
         useAuthStore.getState().logout()

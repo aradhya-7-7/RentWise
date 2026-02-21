@@ -1,12 +1,10 @@
 import { create } from "zustand"
 import { authService } from "@/services/auth.service"
 
-
 export type Role = "ADMIN" | "OWNER" | "TENANT"
 
 export type User = {
-  id: string
-  name: string
+  id: number
   email: string
   role: Role
 }
@@ -60,13 +58,11 @@ const readAuth = (): { user: User; token: string } | null => {
 }
 
 export const useAuthStore = create<AuthState & AuthActions>((set) => ({
-
   user: null,
   token: null,
   isAuthenticated: false,
   isHydrated: false,
 
-  // ✅ keep login session on refresh
   hydrate: () => {
     const data = readAuth()
 
@@ -88,44 +84,40 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
     })
   },
 
-  // ✅ enterprise-ready login (API)
   login: async ({ email, password }) => {
+    const res = await authService.login({ email, password })
 
-  const res = await authService.login({
-    email,
-    password,
-  })
+    const { user, token } = res
 
-  const user = res.user
-  const token = res.token
+    saveAuth({ user, token })
 
-  saveAuth({ user, token })
+    set({
+      user,
+      token,
+      isAuthenticated: true,
+    })
+  },
 
-  set({
-    user,
-    token,
-    isAuthenticated: true,
-  })
-},
+  register: async (payload) => {
+    const formData = new FormData()
 
+    Object.entries(payload).forEach(([key, value]) => {
+      if (!value) return
+      formData.append(key, value as any)
+    })
 
-  // ✅ register
-register: async (payload) => {
+    const res = await authService.register(formData)
 
-  const res = await authService.register(payload)
+    const { user, token } = res
 
-  const user = res.user
-  const token = res.token
+    saveAuth({ user, token })
 
-  saveAuth({ user, token })
-
-  set({
-    user,
-    token,
-    isAuthenticated: true,
-  })
-},
-
+    set({
+      user,
+      token,
+      isAuthenticated: true,
+    })
+  },
 
   logout: () => {
     clearAuth()

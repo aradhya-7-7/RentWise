@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 
 import { Button } from "@/components/ui/button"
@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { useAuthStore } from "@/store/auth.store"
 import { useToast } from "@/hooks/useToast"
 import { Toast, ToastTitle, ToastDescription } from "@/components/ui/toast"
+import { api } from "@/services/api"
 
 type SelectRole = "OWNER" | "TENANT"
 
@@ -90,6 +91,8 @@ export default function Register() {
       })
       return
     }
+
+
   }
 
   return (
